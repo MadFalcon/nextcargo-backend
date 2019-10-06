@@ -488,7 +488,7 @@ mongoose.connect(uri, { useNewUrlParser: true }, function (err, database) {
     return console.log(err);
   }
   db = database;
-  app.listen(process.env.PORT || 3004, function () {
+  app.listen(process.env.PORT || 3000, function () {
     console.log('server started');
   });
   console.log('connected ' + database);
