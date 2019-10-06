@@ -444,18 +444,22 @@ app.get('/getvacantitems', function (req, res) {
       }
     });
 });
-app.get('/logout:id', function (req, res) {
+app.get('/logout/:id', function (req, res) {
   let token = req.params.id;
   Notify.unsubscribeToTopic(token)
   res.send('500')
 })
-
 
 app.get('/noti', function (req, res) {
   let title = 'TITLE'
   let body = 'NEW NEWS'
   Notify.notifiyNews(title, body)
 })
+// app.get('/lg', function (req, res) {
+
+//   Notify.unsubscribeToTopic('cPu3DrIfPig:APA91bGpI5FPYTQj1jUfOpFfhT45scVR008zfDit9LV1CpCctbB3SMZyG3TPmC3F9x67P1y884Vu5WsR5O7FH4gNF2N08GE4uqgtXcovhbvJTzWCnTIjtTFAaQAaRWjpaGaLIzn_WfKx'
+//     , 'ds')
+// })
 app.get('/pur', function (req, res) {
   let title = 'TITLE'
   let body = 'PURCHASE'
