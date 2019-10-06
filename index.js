@@ -200,6 +200,8 @@ app.post('/user/createPurchase', upload.array('photo', 2), function (req, res) {
     newDvItem.save(function (err) {
       if (!err) {
         console.log('ok');
+
+        Notify.PurchaseNotify(`По адресу: ${decryptedData.userAddres} От: ${decryptedData.userFCs}`)
         return res.send(crypt('500'));
 
       } else {
@@ -212,9 +214,9 @@ app.post('/user/createPurchase', upload.array('photo', 2), function (req, res) {
 app.post('/user/resetPurchase', function (req, res) {
   let decryptedData = decrypt(req.body.data)
 
-  DeliveryItem.findById(decryptedData.dvId, function (err, dvItem) {
+  DeliveryItem.findById(decryptedData.dvId).populate('user').exec(function (err, dvItem) {
     if (err) {
-      console.log(err);
+      console.log(err, 'err');
     } else {
 
       (dvItem.decoratedDate = Date.now()),
@@ -224,6 +226,7 @@ app.post('/user/resetPurchase', function (req, res) {
       if (err) {
         console.log(err);
       } else {
+        Notify.purchaseStatusChanged(dvItem.user.token, 'В ожидании')
         console.log('okkkk');
         return res.send(crypt('500'));
       }
@@ -238,7 +241,7 @@ app.post('/user/decoratePurchase', upload.array('photo', 2), function (req, res)
   console.log(req.files[0], 'files0')
   console.log(req.files[1], 'files1')
   let passPhoto = req.files[1] !== undefined ? req.files[1].filename : ''
-  DeliveryItem.findById(decryptedData.dvId, function (err, dvItem) {
+  DeliveryItem.findById(decryptedData.dvId).populate('user').exec(function (err, dvItem) {
     if (err) {
       console.log(err);
     } else {
@@ -270,6 +273,8 @@ app.post('/user/decoratePurchase', upload.array('photo', 2), function (req, res)
       if (err) {
         console.log(err);
       } else {
+        Notify.purchaseStatusChanged(dvItem.user.token, 'В процессе')
+
         console.log('okkkk');
         return res.send(crypt('500'));
       }
@@ -280,7 +285,7 @@ app.post('/user/decoratePurchase', upload.array('photo', 2), function (req, res)
 app.post('/user/reservePurchase', function (req, res) {
   let decryptedData = decrypt(req.body.data)
 
-  DeliveryItem.findById(decryptedData.dvId, function (err, dvItem) {
+  DeliveryItem.findById(decryptedData.dvId).populate('user').exec(function (err, dvItem) {
     if (err) {
       console.log(err);
     }
@@ -291,6 +296,8 @@ app.post('/user/reservePurchase', function (req, res) {
       if (err) {
         console.log(err);
       } else {
+        Notify.purchaseStatusChanged(dvItem.user.token, 'Зарезервирован работником')
+
         console.log('okkkk');
         return res.send(crypt('500'));
       }
@@ -314,7 +321,7 @@ app.post('/user/delete', function (req, res) {
 app.post('/user/completePurchase', function (req, res) {
   let decryptedData = decrypt(req.body.data)
 
-  DeliveryItem.findById(decryptedData.dvId, function (err, dvItem) {
+  DeliveryItem.findById(decryptedData.dvId).populate('user').exec(function (err, dvItem) {
     if (err) {
       console.log(err);
     }
@@ -325,6 +332,8 @@ app.post('/user/completePurchase', function (req, res) {
       if (err) {
         console.log(err);
       } else {
+        Notify.purchaseStatusChanged(dvItem.user.token, 'Заказ успешно выполнен!')
+
         console.log('okkkk');
         res.send(crypt('500'));
       }
@@ -452,21 +461,21 @@ app.get('/logout/:id', function (req, res) {
   res.send('500')
 })
 
-app.get('/noti', function (req, res) {
-  let title = 'TITLE'
-  let body = 'NEW NEWS'
-  Notify.notifiyNews(title, body)
-})
-// app.get('/lg', function (req, res) {
-
-//   Notify.unsubscribeToTopic('cPu3DrIfPig:APA91bGpI5FPYTQj1jUfOpFfhT45scVR008zfDit9LV1CpCctbB3SMZyG3TPmC3F9x67P1y884Vu5WsR5O7FH4gNF2N08GE4uqgtXcovhbvJTzWCnTIjtTFAaQAaRWjpaGaLIzn_WfKx'
-//     , 'ds')
+// app.get('/noti', function (req, res) {
+//   let title = 'TITLE'
+//   let body = 'NEW NEWS'
+//   Notify.notifiyNews(title, body)
 // })
-app.get('/pur', function (req, res) {
-  let title = 'TITLE'
-  let body = 'PURCHASE'
-  Notify.PurchaseNotify(title, body)
-})
+// // app.get('/lg', function (req, res) {
+
+// //   Notify.unsubscribeToTopic('cPu3DrIfPig:APA91bGpI5FPYTQj1jUfOpFfhT45scVR008zfDit9LV1CpCctbB3SMZyG3TPmC3F9x67P1y884Vu5WsR5O7FH4gNF2N08GE4uqgtXcovhbvJTzWCnTIjtTFAaQAaRWjpaGaLIzn_WfKx'
+// //     , 'ds')
+// // })
+// app.get('/pur', function (req, res) {
+//   let title = 'TITLE'
+//   let body = 'PURCHASE'
+//   Notify.purchaseStatusChanged(title, body)
+// })
 ///dasdasds
 
 
@@ -479,7 +488,7 @@ mongoose.connect(uri, { useNewUrlParser: true }, function (err, database) {
     return console.log(err);
   }
   db = database;
-  app.listen(process.env.PORT || 3003, function () {
+  app.listen(process.env.PORT || 3004, function () {
     console.log('server started');
   });
   console.log('connected ' + database);

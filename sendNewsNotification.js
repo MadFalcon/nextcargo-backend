@@ -7,6 +7,8 @@ admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
   databaseURL: "https://nextcargopush.firebaseio.com"
 });
+
+
 function notifiyNews(title, body) {
 
   var message = {
@@ -30,12 +32,12 @@ function notifiyNews(title, body) {
       console.log("Error sending message:", error);
     });
 }
-function PurchaseNotify(title, body, token) {
+function PurchaseNotify(body) {
   var registrationToken = 'epDbdfKjlrM:APA91bEwyUILNWRQlqYTcLurajke73Yac1U53LVB79eSrqahBhhNtaDHHEHd4jskW42tugUYoAVa5PB8n7tVzlOxB67HJCPKX9Q6x0LGkGNYQm8CXo7rz4kqAOb21pJKnAHXJnaLJUpL'
 
   var message = {
     notification: {
-      title: title,
+      title: 'Новая заявка!',
       body: body
     },
     data: {
@@ -124,10 +126,29 @@ function unsubscribeToTopic(token, topic) {
       console.log('Error unsubscribing from topic:', error);
     });
 }
+function purchaseStatusChanged(token, body) {
+
+  var message = {
+    notification: {
+      title: 'Статус вашей заявки изменился',
+      body: body
+    },
+  };
+
+
+  admin.messaging().sendToDevice(token, message)
+    .then((response) => {
+      console.log('Successfully sent message:', response);
+    })
+    .catch((error) => {
+      console.log('Error sending message:', error);
+    });
+}
 module.exports = {
   notifiyNews: notifiyNews,
   PurchaseNotify: PurchaseNotify,
   subscibeToTopic: subscibeToTopic,
-  unsubscribeToTopic: unsubscribeToTopic
+  unsubscribeToTopic: unsubscribeToTopic,
+  purchaseStatusChanged: purchaseStatusChanged
 }
 
