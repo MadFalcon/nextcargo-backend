@@ -84,7 +84,7 @@ function subscibeToTopic(token, topic) {
       .catch(function (error) {
         console.log('Error subscribing to topic:', error);
       });
-    admin.messaging().subscribeToTopic(registrationTokens, topic)
+    admin.messaging().subscribeToTopic(registrationTokens, 'purchase')
       .then(function (response) {
         // See the MessagingTopicManagementResponse reference documentation
         // for the contents of response.

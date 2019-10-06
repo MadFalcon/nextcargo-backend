@@ -446,6 +446,8 @@ app.get('/getvacantitems', function (req, res) {
 });
 app.get('/logout/:id', function (req, res) {
   let token = req.params.id;
+  console.log(req.param.id)
+  console.log(req.params.id)
   Notify.unsubscribeToTopic(token)
   res.send('500')
 })
