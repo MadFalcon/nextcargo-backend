@@ -455,28 +455,38 @@ app.get('/getvacantitems', function (req, res) {
 });
 app.get('/logout/:id', function (req, res) {
   let token = req.params.id;
-  console.log(req.param.id)
-  console.log(req.params.id)
+  User.findOne({ token: token }).exec(function (err, data) {
+    if (!err) {
+      data.token = ''
+      data.save(function (err) {
+        if (!err) {
+          console.log('token removed');
+        } else {
+          console.log(err);
+        }
+      });
+    }
+
+  });
   Notify.unsubscribeToTopic(token)
   res.send('500')
 })
 
-// app.get('/noti', function (req, res) {
-//   let title = 'TITLE'
-//   let body = 'NEW NEWS'
-//   Notify.notifiyNews(title, body)
-// })
-// // app.get('/lg', function (req, res) {
+app.get('/noti', function (req, res) {
+  let title = 'TITLE'
+  let body = 'NEW NEWS'
+  Notify.notifiyNews(title, body)
+})
+// app.get('/lg', function (req, res) {
 
-// //   Notify.unsubscribeToTopic('cPu3DrIfPig:APA91bGpI5FPYTQj1jUfOpFfhT45scVR008zfDit9LV1CpCctbB3SMZyG3TPmC3F9x67P1y884Vu5WsR5O7FH4gNF2N08GE4uqgtXcovhbvJTzWCnTIjtTFAaQAaRWjpaGaLIzn_WfKx'
-// //     , 'ds')
-// // })
-// app.get('/pur', function (req, res) {
-//   let title = 'TITLE'
-//   let body = 'PURCHASE'
-//   Notify.purchaseStatusChanged(title, body)
+//   Notify.unsubscribeToTopic('cPu3DrIfPig:APA91bGpI5FPYTQj1jUfOpFfhT45scVR008zfDit9LV1CpCctbB3SMZyG3TPmC3F9x67P1y884Vu5WsR5O7FH4gNF2N08GE4uqgtXcovhbvJTzWCnTIjtTFAaQAaRWjpaGaLIzn_WfKx'
+//     , 'ds')
 // })
-///dasdasds
+app.get('/pur', function (req, res) {
+  let title = 'TITLE'
+  let body = 'PURCHASE'
+  Notify.purchaseStatusChanged(title, body)
+})
 
 
 
